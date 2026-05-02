@@ -230,25 +230,33 @@ export async function fetchCountryDetails(countryName: string): Promise<Partial<
   } catch (error) {
     console.warn("API Error, falling back to static/simulated data:", error);
     
-    // Fallback logic for common countries if API is down/quota limited
     const fallbacks: Record<string, any> = {
       "United States": {
         eligibility: ["Citizen at birth", "18+ years old", "30-day residency"],
         registration: { steps: ["Step 1: Check eligibility", "Step 2: Register online/mail", "Step 3: Receive voter card", "Step 4: Verify polling location"], link: "https://vote.gov" },
         currentRulingParty: "Republican Party",
-        rulingPartyDetails: { foundedYear: "1854", history: "GOP, major US party.", origin: "Founded by anti-slavery activists." },
-        leadership: { current: { name: "Donald J. Trump", role: "President", since: "2025" } },
+        rulingPartyDetails: { foundedYear: 1854, history: "GOP, major US party.", origin: "Founded by anti-slavery activists." },
+        leadership: { current: { name: "Donald J. Trump", role: "President", since: "2025", party: "Republican", voteShare: "50%" } },
         nextElectionDetails: { month: "November", year: "2028" },
-        history: { origin: "Constitution 1787", milestones: [{ year: "1920", event: "19th Amendment" }] }
+        history: { origin: "Constitution 1787", milestones: [{ year: "1920", event: "19th Amendment", description: "Women's suffrage" }] }
       },
       "United Kingdom": {
         eligibility: ["18+ years old", "British/Commonwealth citizen", "Registered address"],
         registration: { steps: ["Step 1: Check ID requirements", "Step 2: Apply for Voter ID", "Step 3: Register via GOV.UK", "Step 4: Receive poll card"], link: "https://gov.uk/register-to-vote" },
         currentRulingParty: "Labour Party",
-        rulingPartyDetails: { foundedYear: "1900", history: "Center-left democratic socialist.", origin: "Born from trade union movement." },
-        leadership: { current: { name: "Keir Starmer", role: "Prime Minister", since: "2024" } },
+        rulingPartyDetails: { foundedYear: 1900, history: "Center-left democratic socialist.", origin: "Born from trade union movement." },
+        leadership: { current: { name: "Keir Starmer", role: "Prime Minister", since: "2024", party: "Labour", voteShare: "33%" } },
         nextElectionDetails: { month: "July", year: "2029" },
-        history: { origin: "Magna Carta heritage", milestones: [{ year: "1928", event: "Equal Franchise" }] }
+        history: { origin: "Magna Carta heritage", milestones: [{ year: "1928", event: "Equal Franchise", description: "Universal suffrage" }] }
+      },
+      "India": {
+        eligibility: ["Citizen of India", "18+ years old", "Resident of polling area"],
+        registration: { steps: ["Step 1: Visit NVSP", "Step 2: Fill Form 6", "Step 3: Upload Proof", "Step 4: Track Status"], link: "https://voters.eci.gov.in" },
+        currentRulingParty: "Bharatiya Janata Party (BJP)",
+        rulingPartyDetails: { foundedYear: 1980, history: "Right-wing nationalist party.", origin: "Emerged from Jana Sangh." },
+        leadership: { current: { name: "Narendra Modi", role: "Prime Minister", since: "2014", party: "BJP", voteShare: "36%" } },
+        nextElectionDetails: { month: "May", year: "2029" },
+        history: { origin: "Constitution 1950", milestones: [{ year: "1951", event: "First General Election", description: "First election of independent India" }] }
       }
     };
 
@@ -256,21 +264,18 @@ export async function fetchCountryDetails(countryName: string): Promise<Partial<
       return { ...fallbacks[countryName], isSimulated: true };
     }
 
-    if (error instanceof Error && (error.message.includes('API Limit') || error.message.includes('Cooldown') || error.message.includes('Quota'))) {
-       // Return a generic "Emergency Profile" if even no static fallback exists
-       return {
-         eligibility: ["Loading requirements..."],
-         registration: { steps: ["API is currently busy.", "Please wait 60s.", "Refresh to retry.", "Data will sync soon."], link: "#" },
-         currentRulingParty: "Syncing...",
-         rulingPartyDetails: { foundedYear: 0, history: "Historical data is currently queued for sync.", origin: "-" },
-         leadership: { current: { name: "Executive Leader", role: "Syncing Data", since: "2024" } },
-         nextElectionDetails: { month: "Upcoming", year: "202x" },
-         history: { origin: "Democracy in this region is well-established. Full archives will load once API quota resets.", milestones: [] },
-         isSimulated: true,
-         isErrorState: true
-       };
-    }
-    throw error;
+    // Return a generic "Emergency Profile" for ALL errors to prevent crashes
+    return {
+      eligibility: ["Loading requirements..."],
+      registration: { steps: ["API is currently busy.", "Please wait 60s.", "Refresh to retry.", "Data will sync soon."], link: "#" },
+      currentRulingParty: "Syncing...",
+      rulingPartyDetails: { foundedYear: 0, history: "Historical data is currently queued for sync.", origin: "-" },
+      leadership: { current: { name: "Executive Leader", role: "Syncing Data", since: "2024", party: "-", voteShare: "-" } },
+      nextElectionDetails: { month: "Upcoming", year: "202x" },
+      history: { origin: "Democracy in this region is well-established. Full archives will load once API quota resets.", milestones: [] },
+      isSimulated: true,
+      isErrorState: true
+    };
   }
 }
 

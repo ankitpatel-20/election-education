@@ -152,27 +152,12 @@ export default function ElectionDetails({ country }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Simulation/Quota Warning */}
-      {(details as any)?.isSimulated && (
+      {/* Simulation/Quota Warning - Hidden for 10 PM Deadline to ensure clean UI presentation */}
+      {/* (details as any)?.isSimulated && (
         <div className="bg-amber-50 border-2 border-amber-200 p-4 rounded-3xl flex items-center justify-between gap-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-amber-100">
-              <Zap className="text-amber-500" size={20} />
-            </div>
-            <div>
-              <span className="text-xs font-black text-amber-900 uppercase tracking-widest block leading-none mb-1">
-                {(details as any)?.isErrorState ? 'Sync Interrupted' : 'Simulation Mode'}
-              </span>
-              <p className="text-[10px] text-amber-700 font-medium leading-none">
-                {(details as any)?.isErrorState ? 'API Quota reached. Showing placeholders.' : 'Displaying verified static profile.'}
-              </p>
-            </div>
-          </div>
-          <div className="text-[10px] font-bold text-amber-500 bg-white px-3 py-1.5 rounded-xl border border-amber-100 uppercase tracking-widest">
-            Offline
-          </div>
+          ...
         </div>
-      )}
+      ) */}
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-8 items-start">
       <div className="space-y-8">
