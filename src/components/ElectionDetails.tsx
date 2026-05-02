@@ -78,6 +78,9 @@ export default function ElectionDetails({ country }: Props) {
           const fullData = await fetchCountryDetails(country.name);
           setLeadership(mainData.leadership || fullData.leadership || { current: { name: "N/A", party: "-", role: "-", since: "-", voteShare: "-" }, historical: [] });
           setHistory(mainData.history || fullData.history || { origin: "Unavailable", milestones: [], turnout: [] });
+          
+          // Merge AI data with static data so the UI gets all the rich extra fields!
+          setDetails({ ...fullData, ...mainData });
         } else {
           setLeadership(mainData.leadership);
           setHistory(mainData.history);
