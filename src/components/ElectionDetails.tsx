@@ -61,7 +61,7 @@ export default function ElectionDetails({ country }: Props) {
 
   const isHomeCountry = homeCountry === country.id;
 
-  const filteredPastLeaders = leadership?.historical.filter(l => 
+  const filteredPastLeaders = leadership?.historical?.filter(l => 
     l.name.toLowerCase().includes(leaderSearch.toLowerCase()) ||
     l.party.toLowerCase().includes(leaderSearch.toLowerCase())
   ) || [];

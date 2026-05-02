@@ -270,7 +270,7 @@ export async function fetchCountryDetails(countryName: string): Promise<Partial<
       registration: { steps: ["API is currently busy.", "Please wait 60s.", "Refresh to retry.", "Data will sync soon."], link: "#" },
       currentRulingParty: "Syncing...",
       rulingPartyDetails: { foundedYear: 0, history: "Historical data is currently queued for sync.", origin: "-" },
-      leadership: { current: { name: "Executive Leader", role: "Syncing Data", since: "2024", party: "-", voteShare: "-" } },
+      leadership: { current: { name: "Executive Leader", role: "Syncing Data", since: "2024", party: "-", voteShare: "-" }, historical: [] },
       nextElectionDetails: { month: "Upcoming", year: "202x" },
       history: { origin: "Democracy in this region is well-established. Full archives will load once API quota resets.", milestones: [] },
       isSimulated: true,
