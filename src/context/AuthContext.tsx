@@ -11,6 +11,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   toggleFavorite: (countryId: string) => Promise<void>;
   updateHomeCountry: (countryId: string) => Promise<void>;
+  bypassLogin: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
   toggleFavorite: async () => {},
   updateHomeCountry: async () => {},
+  bypassLogin: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -55,6 +57,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, []);
 
+  const bypassLogin = () => {
+    setUser({ uid: 'guest-user', email: 'guest@civicmind.local', displayName: 'Guest User', photoURL: '' } as User);
+    setFavorites(['in', 'us', 'gb']);
+    setHomeCountry('us');
+    setLoading(false);
+  };
+
   const updateHomeCountry = async (countryId: string) => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
@@ -84,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, favorites, homeCountry, logout, toggleFavorite, updateHomeCountry }}>
+    <AuthContext.Provider value={{ user, loading, favorites, homeCountry, logout, toggleFavorite, updateHomeCountry, bypassLogin }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,11 +4,13 @@ import { auth, db, signInWithGoogle } from '../lib/firebase';
 import { useState } from 'react';
 import { COUNTRIES } from '../data/countries';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState('us');
+  const { bypassLogin } = useAuth();
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -32,8 +34,8 @@ export default function LoginPage() {
           updatedAt: serverTimestamp(),
         });
       }
-    } catch (err) {
-      setError('Authentication failed. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed. Please try again.');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -136,6 +138,11 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-semibold">
+                {error}
+              </div>
+            )}
             <button 
               onClick={handleGoogleSignIn}
               disabled={isLoading}
@@ -150,6 +157,16 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+
+            {error && (
+              <button 
+                onClick={bypassLogin}
+                className="w-full h-12 bg-white text-slate-700 border-2 border-slate-200 rounded-2xl flex items-center justify-center gap-3 font-bold hover:bg-slate-50 transition-all group"
+              >
+                <Bot size={18} />
+                Continue as Guest (Local Dev)
+              </button>
+            )}
             
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">
