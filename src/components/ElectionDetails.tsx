@@ -73,14 +73,22 @@ export default function ElectionDetails({ country }: Props) {
         const mainData = !country.isDetailed ? await fetchCountryDetails(country.name) : country;
         setDetails(mainData);
         
-        // Use the bundled leadership and history from mainData
+        // Fetch leadership and history in parallel if they aren't bundled
+        const promises = [];
+        
         if (mainData.leadership) {
           setLeadership(mainData.leadership);
+        } else {
+          promises.push(fetchLeadershipData(country.name).then(setLeadership).catch(e => console.error("Failed to fetch leadership:", e)));
         }
         
         if (mainData.history) {
           setHistory(mainData.history);
+        } else {
+          promises.push(fetchCountryHistory(country.name).then(setHistory).catch(e => console.error("Failed to fetch history:", e)));
         }
+        
+        await Promise.all(promises);
       } catch (err: any) {
         setError(err.message);
       } finally {
