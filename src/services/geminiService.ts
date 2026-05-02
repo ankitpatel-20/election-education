@@ -7,6 +7,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 let requestQueue: Promise<any> = Promise.resolve();
 const REQUEST_COOLDOWN = 10000; // 10 seconds between ANY AI requests (max 6 RPM)
 let circuitBreakerUntil = 0;
+let lastRequestTime = 0;
 
 function getCacheKey(type: string, country: string): string {
   return `voting_cache_v7_${type}_${country.toLowerCase().replace(/\s+/g, '_')}`;
@@ -50,9 +51,14 @@ async function generateAiContent(prompt: string, schema: any, model = "gemini-1.
 
   const execute = async () => {
     try {
-      // Small randomized additional delay to avoid synchronized burst patterns
-      const jitter = Math.random() * 2000;
-      await new Promise(resolve => setTimeout(resolve, REQUEST_COOLDOWN + jitter));
+      const now = Date.now();
+      const timeSinceLast = now - lastRequestTime;
+      if (timeSinceLast < REQUEST_COOLDOWN) {
+        // Only wait if we are making requests too quickly
+        const waitTime = REQUEST_COOLDOWN - timeSinceLast + (Math.random() * 2000);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+      lastRequestTime = Date.now();
 
       const response = await ai.models.generateContent({
         model,
